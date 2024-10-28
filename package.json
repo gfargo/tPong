@@ -1,5 +1,5 @@
 {
-	"name": "tong",
+	"name": "tpong",
 	"version": "0.0.0",
 	"license": "MIT",
 	"bin": "dist/cli.js",
@@ -17,6 +17,13 @@
 	"files": [
 		"dist"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gfargo/tPong"
+	},
+	"bugs": {
+		"url": "https://github.com/gfargo/tPong/issues"
+	},
 	"dependencies": {
 		"ink": "^4.1.0",
 		"ink-gradient": "^3.0.0",

@@ -1,6 +1,6 @@
-# tong 🏓
+# tPong 🏓
 
-An implementation of the classic Pong game for yout Terminal, built with [React](https://github.com/facebook/react/) and [Ink](https://github.com/vadimdemedes/ink).
+An implementation of the classic Pong game for your Terminal, built with [React](https://github.com/facebook/react/) and [Ink](https://github.com/vadimdemedes/ink).
 
 ## ✨ Features
 
@@ -31,13 +31,13 @@ An implementation of the classic Pong game for yout Terminal, built with [React]
 To start the game in single-player mode:
 
 ```bash
-npx tong
+npx tpong
 ```
 
 To start the game in two-player mode:
 
 ```bash
-npx tong --multiplayer
+npx tpong --multiplayer
 ```
 
 For a smooth experience, ensure you are using a terminal that supports color and has a large enough display.
