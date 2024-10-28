@@ -1,4 +1,4 @@
-# 🏓 Tong: Terminal-based Pong Game
+# 🏓 tong
 
 A modern implementation of the classic Pong game, built with React and Ink for a terminal-based experience.
 

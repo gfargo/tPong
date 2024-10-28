@@ -4,6 +4,7 @@ import { updateAIPaddle } from './ai/basic.js';
 import {
 	BALL_CHAR,
 	BALL_SPEED_INCREMENT,
+	DIVIDER_CHAR,
 	GAME_HEIGHT,
 	GAME_SPEED,
 	GAME_WIDTH,
@@ -200,7 +201,7 @@ export const App = ({
 		<Box flexDirection="column">
 			<Box justifyContent="space-between" width={GAME_WIDTH}>
 				<Text color="cyan">Left: {leftScore}</Text>
-				<Text color="yellow">Ball Speed: {ballSpeed.toFixed(1)}x</Text>
+				<Text color="yellow" italic>Speed: {ballSpeed.toFixed(1)}x</Text>
 				<Text color="magenta">Right: {rightScore}</Text>
 			</Box>
 			{Array.from({length: GAME_HEIGHT}).map((_, y) => (
@@ -238,7 +239,7 @@ export const App = ({
 						if (x === GAME_WIDTH / 2) {
 							return (
 								<Text key={`${x}-${y}`} color="white">
-									|
+									{DIVIDER_CHAR}
 								</Text>
 							);
 						}
