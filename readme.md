@@ -47,8 +47,8 @@ For a smooth experience, ensure you are using a terminal that supports color and
 We welcome contributions! To set up a development environment:
 
 1. Fork the repository and clone it to your local machine.
-2. Install the dependencies with `npm install`.
-3. Run `npm start` to test your changes in real-time.
+2. Install the dependencies with `yarn install`.
+3. Run `yarn start` to test your changes in real-time.
 
 When submitting a pull request:
 
