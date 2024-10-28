@@ -1,6 +1,19 @@
 import { Box, Text, useApp, useInput } from 'ink';
 import React, { useEffect, useState } from 'react';
-import { BALL_CHAR, PADDLE_HEIGHT } from './constants.js';
+import {
+	BALL_CHAR,
+	PADDLE_HEIGHT,
+	GAME_WIDTH,
+	GAME_HEIGHT,
+	GAME_SPEED,
+	INITIAL_BALL_SPEED,
+	MAX_BALL_SPEED,
+	BALL_SPEED_INCREMENT,
+	WINNING_SCORE,
+	LEFT_PADDLE_X,
+	RIGHT_PADDLE_X,
+	INITIAL_BALL_POSITION
+} from './constants.js';
 
 export const Pong = ({
 	multiplayer,
@@ -16,13 +29,13 @@ export const Pong = ({
 	const [rightScore, setRightScore] = useState(0);
 	const [leftPaddle, setLeftPaddle] = useState(0);
 	const [rightPaddle, setRightPaddle] = useState(0);
-	const [ballX, setBallX] = useState(40);
-	const [ballY, setBallY] = useState(10);
+	const [ballX, setBallX] = useState(INITIAL_BALL_POSITION.x);
+	const [ballY, setBallY] = useState(INITIAL_BALL_POSITION.y);
 	const [ballDx, setBallDx] = useState(1);
 	const [ballDy, setBallDy] = useState(1);
 	const [gameOver, setGameOver] = useState(false);
 	const [winner, setWinner] = useState('');
-	const [ballSpeed, setBallSpeed] = useState(1);
+	const [ballSpeed, setBallSpeed] = useState(INITIAL_BALL_SPEED);
 	const [gameState, setGameState] = useState('menu');
 
 	useInput(
@@ -38,7 +51,7 @@ export const Pong = ({
 				if (key.upArrow) {
 					setLeftPaddle(prev => Math.max(0, prev - 1));
 				} else if (key.downArrow) {
-					setLeftPaddle(prev => Math.min(17, prev + 1));
+					setLeftPaddle(prev => Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1));
 				} else if (key.escape) {
 					setGameState('menu');
 					resetGame();
@@ -59,72 +72,80 @@ export const Pong = ({
 		setRightScore(0);
 		setLeftPaddle(0);
 		setRightPaddle(0);
-		setBallX(40);
-		setBallY(10);
+		setBallX(INITIAL_BALL_POSITION.x);
+		setBallY(INITIAL_BALL_POSITION.y);
 		setBallDx(1);
 		setBallDy(1);
 		setGameOver(false);
 		setWinner('');
-		setBallSpeed(1);
+		setBallSpeed(INITIAL_BALL_SPEED);
 	};
 
 	useEffect(() => {
 		if (gameState !== 'playing') return;
 
 		const timer = setInterval(() => {
-			// Update ball position
-			setBallX(x => x + ballDx * ballSpeed);
-			setBallY(y => y + ballDy * ballSpeed);
+			setBallX(prevX => {
+				const newX = prevX + ballDx * ballSpeed;
+				if (newX <= LEFT_PADDLE_X + 1 && ballY >= leftPaddle && ballY < leftPaddle + PADDLE_HEIGHT) {
+					setBallDx(prev => -prev);
+					return LEFT_PADDLE_X + 2;
+				}
+				if (newX >= RIGHT_PADDLE_X - 1 && ballY >= rightPaddle && ballY < rightPaddle + PADDLE_HEIGHT) {
+					setBallDx(prev => -prev);
+					return RIGHT_PADDLE_X - 2;
+				}
+				return newX;
+			});
+
+			setBallY(prevY => {
+				const newY = prevY + ballDy * ballSpeed;
+				if (newY <= 0 || newY >= GAME_HEIGHT - 1) {
+					setBallDy(prev => -prev);
+					return newY <= 0 ? 1 : GAME_HEIGHT - 2;
+				}
+				return newY;
+			});
 
 			// Simple AI for right paddle
 			setRightPaddle(prev => {
 				if (ballY > prev + PADDLE_HEIGHT / 2) {
-					return Math.min(17, prev + 1);
+					return Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1);
 				} else if (ballY < prev + PADDLE_HEIGHT / 2) {
 					return Math.max(0, prev - 1);
 				}
 				return prev;
 			});
 
-			// Ball collision with top and bottom
-			if (ballY <= 0 || ballY >= 19) {
-				setBallDy(dy => -dy);
-			}
-
-			// Ball collision with paddles
+			// Increase ball speed on paddle hit
 			if (
-				(ballX <= 1 &&
-					ballY >= leftPaddle &&
-					ballY < leftPaddle + PADDLE_HEIGHT) ||
-				(ballX >= 78 &&
-					ballY >= rightPaddle &&
-					ballY < rightPaddle + PADDLE_HEIGHT)
+				(ballX <= LEFT_PADDLE_X + 2 && ballY >= leftPaddle && ballY < leftPaddle + PADDLE_HEIGHT) ||
+				(ballX >= RIGHT_PADDLE_X - 2 && ballY >= rightPaddle && ballY < rightPaddle + PADDLE_HEIGHT)
 			) {
-				setBallDx(dx => -dx);
-				setBallSpeed(prev => Math.min(prev + 0.1, 2)); // Increase speed, max 2x
+				setBallSpeed(prev => Math.min(prev + BALL_SPEED_INCREMENT, MAX_BALL_SPEED));
 			}
 
 			// Reset ball if it goes out of bounds
 			if (ballX < 0) {
-				setBallX(40);
-				setBallY(10);
-				setBallSpeed(1); // Reset speed when scoring
+				setBallX(INITIAL_BALL_POSITION.x);
+				setBallY(INITIAL_BALL_POSITION.y);
+				setBallSpeed(INITIAL_BALL_SPEED);
 				setRightScore(prev => {
 					const newScore = prev + 1;
-					if (newScore >= 5) {
+					if (newScore >= WINNING_SCORE) {
 						setGameOver(true);
 						setWinner('Right');
 						setGameState('gameOver');
 					}
 					return newScore;
 				});
-			} else if (ballX > 79) {
-				setBallX(40);
-				setBallY(10);
-				setBallSpeed(1); // Reset speed when scoring
+			} else if (ballX > GAME_WIDTH - 1) {
+				setBallX(INITIAL_BALL_POSITION.x);
+				setBallY(INITIAL_BALL_POSITION.y);
+				setBallSpeed(INITIAL_BALL_SPEED);
 				setLeftScore(prev => {
 					const newScore = prev + 1;
-					if (newScore >= 5) {
+					if (newScore >= WINNING_SCORE) {
 						setGameOver(true);
 						setWinner('Left');
 						setGameState('gameOver');
@@ -132,35 +153,35 @@ export const Pong = ({
 					return newScore;
 				});
 			}
-		}, 100);
+		}, GAME_SPEED);
 
 		return () => clearInterval(timer);
 	}, [ballDx, ballDy, leftPaddle, rightPaddle, gameOver, ballSpeed, gameState]);
 
 	const renderGame = () => (
 		<Box flexDirection="column">
-			<Box justifyContent="space-between" width={80}>
+			<Box justifyContent="space-between" width={GAME_WIDTH}>
 				<Text>Left: {leftScore}</Text>
 				<Text>Right: {rightScore}</Text>
 				<Text>Ball Speed: {ballSpeed.toFixed(1)}x</Text>
 			</Box>
-			{Array.from({length: 20}).map((_, y) => (
+			{Array.from({length: GAME_HEIGHT}).map((_, y) => (
 				<Box key={y}>
-					{Array.from({length: 80}).map((_, x) => {
-						if (x === Math.round(ballX) && y === Math.round(ballY)) {
+					{Array.from({length: GAME_WIDTH}).map((_, x) => {
+						if (Math.round(ballX) === x && Math.round(ballY) === y) {
 							return <Text key={`${x}-${y}`}>{BALL_CHAR}</Text>;
 						}
-						if (x === 0 && y >= leftPaddle && y < leftPaddle + PADDLE_HEIGHT) {
+						if (x === LEFT_PADDLE_X && y >= leftPaddle && y < leftPaddle + PADDLE_HEIGHT) {
 							return <Text key={`${x}-${y}`}>█</Text>;
 						}
 						if (
-							x === 79 &&
+							x === RIGHT_PADDLE_X &&
 							y >= rightPaddle &&
 							y < rightPaddle + PADDLE_HEIGHT
 						) {
 							return <Text key={`${x}-${y}`}>█</Text>;
 						}
-						if (x === 40) {
+						if (x === GAME_WIDTH / 2) {
 							return <Text key={`${x}-${y}`}>|</Text>;
 						}
 						return <Text key={`${x}-${y}`}> </Text>;
