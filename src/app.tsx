@@ -1,29 +1,29 @@
 import { Box, Text, useApp, useInput } from 'ink'
 import React, { useEffect, useState } from 'react'
-import { updateAIPaddle } from './ai/basic.js'
+import { calculateNextPaddlePosition } from './ai/basic.js'
 import {
-	BALL_CHAR,
-	BALL_SPEED_INCREMENT,
-	DIVIDER_CHAR,
-	GAME_HEIGHT,
-	GAME_SPEED,
-	GAME_WIDTH,
-	INITIAL_BALL_POSITION,
-	INITIAL_BALL_SPEED,
-	LEFT_PADDLE_X,
-	MAX_BALL_SPEED,
-	PADDLE_HEIGHT,
-	RIGHT_PADDLE_X,
-	WINNING_SCORE,
+  BALL_CHAR,
+  BALL_SPEED_INCREMENT,
+  DIVIDER_CHAR,
+  GAME_HEIGHT,
+  GAME_SPEED,
+  GAME_WIDTH,
+  INITIAL_BALL_POSITION,
+  INITIAL_BALL_SPEED,
+  LEFT_PADDLE_X,
+  MAX_BALL_SPEED,
+  PADDLE_HEIGHT,
+  RIGHT_PADDLE_X,
+  WINNING_SCORE,
 } from './constants.js'
-import { GameOverScreen } from './ui/GameOverScreen.js'
-import { MenuScreen } from './ui/MenuScreen.js'
+import { GameOverScreen } from './ui/game-over.js'
+import { MenuScreen } from './ui/main-menu.js'
 
-export const App = ({
-  multiplayer,
+export function App({
+  isMultiplayerMode,
 }: {
-  multiplayer: boolean
-}): JSX.Element | undefined => {
+  readonly isMultiplayerMode: boolean
+}): JSX.Element | undefined {
   const { exit } = useApp()
   const [leftScore, setLeftScore] = useState(0)
   const [rightScore, setRightScore] = useState(0)
@@ -48,40 +48,53 @@ export const App = ({
         return: boolean
       }
     ) => {
-      if (gameState === 'menu') {
-        if (key.return) {
-          setGameState('playing')
-        }
-      } else if (gameState === 'playing') {
-        if (key.upArrow) {
-          setLeftPaddle((prev) => Math.max(0, prev - 1))
-        } else if (key.downArrow) {
-          setLeftPaddle((prev) =>
-            Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1)
-          )
+      switch (gameState) {
+        case 'menu': {
+          if (key.return) {
+            setGameState('playing')
+          }
+
+          break
         }
 
-        if (multiplayer) {
-          if (input === 'w') {
-            setRightPaddle((prev) => Math.max(0, prev - 1))
-          } else if (input === 's') {
-            setRightPaddle((prev) =>
-              Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1)
+        case 'playing': {
+          if (key.upArrow) {
+            setLeftPaddle((previous) => Math.max(0, previous - 1))
+          } else if (key.downArrow) {
+            setLeftPaddle((previous) =>
+              Math.min(GAME_HEIGHT - PADDLE_HEIGHT, previous + 1)
             )
           }
+
+          if (isMultiplayerMode) {
+            if (input === 'w') {
+              setRightPaddle((previous) => Math.max(0, previous - 1))
+            } else if (input === 's') {
+              setRightPaddle((previous) =>
+                Math.min(GAME_HEIGHT - PADDLE_HEIGHT, previous + 1)
+              )
+            }
+          }
+
+          if (key.escape) {
+            setGameState('menu')
+            resetGame()
+          }
+
+          break
         }
 
-        if (key.escape) {
-          setGameState('menu')
-          resetGame()
+        case 'gameOver': {
+          if (key.return) {
+            setGameState('menu')
+            resetGame()
+          } else if (key.escape) {
+            exit()
+          }
+
+          break
         }
-      } else if (gameState === 'gameOver') {
-        if (key.return) {
-          setGameState('menu')
-          resetGame()
-        } else if (key.escape) {
-          exit()
-        }
+        // No default
       }
     }
   )
@@ -106,39 +119,44 @@ export const App = ({
     }
 
     const timer = setInterval(() => {
-      setBallX((prevX) => {
-        const newX = prevX + ballDx * ballSpeed
+      setBallX((previousX) => {
+        const newX = previousX + ballDx * ballSpeed
         if (
           newX <= LEFT_PADDLE_X + 1 &&
           ballY >= leftPaddle &&
           ballY < leftPaddle + PADDLE_HEIGHT
         ) {
-          setBallDx((prev) => -prev)
+          setBallDx((previous) => -previous)
           return LEFT_PADDLE_X + 2
         }
+
         if (
           newX >= RIGHT_PADDLE_X - 1 &&
           ballY >= rightPaddle &&
           ballY < rightPaddle + PADDLE_HEIGHT
         ) {
-          setBallDx((prev) => -prev)
+          setBallDx((previous) => -previous)
           return RIGHT_PADDLE_X - 2
         }
+
         return newX
       })
 
-      setBallY((prevY) => {
-        const newY = prevY + ballDy * ballSpeed
+      setBallY((previousY) => {
+        const newY = previousY + ballDy * ballSpeed
         if (newY <= 0 || newY >= GAME_HEIGHT - 1) {
-          setBallDy((prev) => -prev)
+          setBallDy((previous) => -previous)
           return newY <= 0 ? 1 : GAME_HEIGHT - 2
         }
+
         return newY
       })
 
       // Update AI paddle if not in multiplayer mode
-      if (!multiplayer) {
-        setRightPaddle((prev) => updateAIPaddle(ballY, prev))
+      if (!isMultiplayerMode) {
+        setRightPaddle((previous) =>
+          calculateNextPaddlePosition(ballY, previous)
+        )
       }
 
       // Increase ball speed on paddle hit
@@ -150,8 +168,8 @@ export const App = ({
           ballY >= rightPaddle &&
           ballY < rightPaddle + PADDLE_HEIGHT)
       ) {
-        setBallSpeed((prev) =>
-          Math.min(prev + BALL_SPEED_INCREMENT, MAX_BALL_SPEED)
+        setBallSpeed((previous) =>
+          Math.min(previous + BALL_SPEED_INCREMENT, MAX_BALL_SPEED)
         )
       }
 
@@ -160,32 +178,36 @@ export const App = ({
         setBallX(INITIAL_BALL_POSITION.x)
         setBallY(INITIAL_BALL_POSITION.y)
         setBallSpeed(INITIAL_BALL_SPEED)
-        setRightScore((prev) => {
-          const newScore = prev + 1
+        setRightScore((previous) => {
+          const newScore = previous + 1
           if (newScore >= WINNING_SCORE) {
             setGameOver(true)
             setWinner('Right')
             setGameState('gameOver')
           }
+
           return newScore
         })
       } else if (ballX > GAME_WIDTH - 1) {
         setBallX(INITIAL_BALL_POSITION.x)
         setBallY(INITIAL_BALL_POSITION.y)
         setBallSpeed(INITIAL_BALL_SPEED)
-        setLeftScore((prev) => {
-          const newScore = prev + 1
+        setLeftScore((previous) => {
+          const newScore = previous + 1
           if (newScore >= WINNING_SCORE) {
             setGameOver(true)
             setWinner('Left')
             setGameState('gameOver')
           }
+
           return newScore
         })
       }
     }, GAME_SPEED)
 
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer)
+    }
   }, [
     ballDx,
     ballDy,
@@ -194,14 +216,14 @@ export const App = ({
     gameOver,
     ballSpeed,
     gameState,
-    multiplayer,
+    isMultiplayerMode,
   ])
 
   const renderGame = () => (
     <Box flexDirection="column">
       <Box justifyContent="space-between" width={GAME_WIDTH}>
         <Text color="cyan">Left: {leftScore}</Text>
-        <Text color="yellow" italic>
+        <Text italic color="yellow">
           Speed: {ballSpeed.toFixed(1)}x
         </Text>
         <Text color="magenta">Right: {rightScore}</Text>
@@ -216,6 +238,7 @@ export const App = ({
                 </Text>
               )
             }
+
             if (
               x === LEFT_PADDLE_X &&
               y >= leftPaddle &&
@@ -227,6 +250,7 @@ export const App = ({
                 </Text>
               )
             }
+
             if (
               x === RIGHT_PADDLE_X &&
               y >= rightPaddle &&
@@ -238,6 +262,7 @@ export const App = ({
                 </Text>
               )
             }
+
             if (x === GAME_WIDTH / 2) {
               return (
                 <Text key={`${x}-${y}`} color="white">
@@ -245,13 +270,14 @@ export const App = ({
                 </Text>
               )
             }
+
             return <Text key={`${x}-${y}`}> </Text>
           })}
         </Box>
       ))}
       <Box justifyContent="center" width={GAME_WIDTH}>
         <Text color="white">
-          {multiplayer ? 'Multiplayer Mode' : 'Single Player Mode'}
+          {isMultiplayerMode ? 'Multiplayer Mode' : 'Single Player Mode'}
         </Text>
       </Box>
     </Box>

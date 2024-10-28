@@ -5,13 +5,13 @@ import React from 'react'
 import { App } from './src/app.js'
 
 test('Singleplayer basic boot test', (t) => {
-  const { lastFrame } = render(<App multiplayer={false} />)
+  const { lastFrame } = render(<App isMultiplayerMode={false} />)
 
   t.is(lastFrame(), `Hello, ${chalk.green('Stranger')}`)
 })
 
 test('Multiplayer basic boot test', (t) => {
-  const { lastFrame } = render(<App multiplayer={true} />)
+  const { lastFrame } = render(<App isMultiplayerMode />)
 
   t.is(lastFrame(), `Hello, ${chalk.green('Jane')}`)
 })

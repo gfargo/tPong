@@ -26,4 +26,4 @@ const cli = meow(
   }
 )
 
-render(<App multiplayer={cli.flags.multiplayer ?? false} />)
+render(<App isMultiplayerMode={cli.flags.multiplayer ?? false} />)

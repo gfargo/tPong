@@ -13,8 +13,9 @@
     "dev": "tsc --watch",
     "release": "release-it",
     "lint": "prettier --check . && xo",
-    "lint:fix": "prettier --write .",
-    "test": "yarn lint:fix && yarn lint && ava"
+    "lint:fix": "prettier --write . && xo --fix",
+    "test": "yarn lint:fix && yarn lint && ava",
+    "test:fix": "yarn lint:fix && yarn lint && ava --update-snapshots"
   },
   "files": [
     "dist"
@@ -60,7 +61,17 @@
     "prettier": true,
     "rules": {
       "react/prop-types": "off",
-      "react/react-in-jsx-scope": "off"
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          "selector": "variable",
+          "format": [
+            "camelCase",
+            "UPPER_CASE"
+          ]
+        }
+      ]
     }
   }
 }

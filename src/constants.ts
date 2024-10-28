@@ -4,7 +4,7 @@ export const DIVIDER_CHAR = '|'
 
 export const GAME_WIDTH = 80
 export const GAME_HEIGHT = 18
-export const GAME_SPEED = 90 // milliseconds, lower is faster
+export const GAME_SPEED = 90 // Milliseconds, lower is faster
 export const INITIAL_BALL_SPEED = 1
 export const MAX_BALL_SPEED = 2
 export const BALL_SPEED_INCREMENT = 0.1
