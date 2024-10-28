@@ -10,11 +10,11 @@ const cli = meow(
 	  $ tong
 
 	Options
-		--two-player
+		--multiplayer
 
 	Examples
 	  $ tong // Single player
-	  $ tong --two-player // Two players
+	  $ tong --multiplayer
 `,
 	{
 		importMeta: import.meta,

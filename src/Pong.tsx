@@ -2,30 +2,27 @@ import { Box, Text, useApp, useInput } from 'ink';
 import React, { useEffect, useState } from 'react';
 import {
 	BALL_CHAR,
-	PADDLE_HEIGHT,
-	GAME_WIDTH,
+	BALL_SPEED_INCREMENT,
 	GAME_HEIGHT,
 	GAME_SPEED,
+	GAME_WIDTH,
+	INITIAL_BALL_POSITION,
 	INITIAL_BALL_SPEED,
-	MAX_BALL_SPEED,
-	BALL_SPEED_INCREMENT,
-	WINNING_SCORE,
 	LEFT_PADDLE_X,
+	MAX_BALL_SPEED,
+	PADDLE_HEIGHT,
 	RIGHT_PADDLE_X,
-	INITIAL_BALL_POSITION
+	WINNING_SCORE,
 } from './constants.js';
-import { MenuScreen } from './MenuScreen.js';
 import { GameOverScreen } from './GameOverScreen.js';
+import { MenuScreen } from './MenuScreen.js';
+import { updateAIPaddle } from './PaddleAI.js';
 
 export const Pong = ({
 	multiplayer,
 }: {
 	multiplayer: boolean;
 }): JSX.Element | null => {
-	if (multiplayer) {
-		console.log('Two player mode is not implemented yet');
-	}
-
 	const {exit} = useApp();
 	const [leftScore, setLeftScore] = useState(0);
 	const [rightScore, setRightScore] = useState(0);
@@ -42,8 +39,13 @@ export const Pong = ({
 
 	useInput(
 		(
-			_input: string,
-			key: {upArrow: boolean; downArrow: boolean; escape: boolean; return: boolean},
+			input: string,
+			key: {
+				upArrow: boolean;
+				downArrow: boolean;
+				escape: boolean;
+				return: boolean;
+			},
 		) => {
 			if (gameState === 'menu') {
 				if (key.return) {
@@ -53,8 +55,22 @@ export const Pong = ({
 				if (key.upArrow) {
 					setLeftPaddle(prev => Math.max(0, prev - 1));
 				} else if (key.downArrow) {
-					setLeftPaddle(prev => Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1));
-				} else if (key.escape) {
+					setLeftPaddle(prev =>
+						Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1),
+					);
+				}
+
+				if (multiplayer) {
+					if (input === 'w') {
+						setRightPaddle(prev => Math.max(0, prev - 1));
+					} else if (input === 's') {
+						setRightPaddle(prev =>
+							Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1),
+						);
+					}
+				}
+
+				if (key.escape) {
 					setGameState('menu');
 					resetGame();
 				}
@@ -84,16 +100,26 @@ export const Pong = ({
 	};
 
 	useEffect(() => {
-		if (gameState !== 'playing') return;
+		if (gameState !== 'playing') {
+			return;
+		}
 
 		const timer = setInterval(() => {
 			setBallX(prevX => {
 				const newX = prevX + ballDx * ballSpeed;
-				if (newX <= LEFT_PADDLE_X + 1 && ballY >= leftPaddle && ballY < leftPaddle + PADDLE_HEIGHT) {
+				if (
+					newX <= LEFT_PADDLE_X + 1 &&
+					ballY >= leftPaddle &&
+					ballY < leftPaddle + PADDLE_HEIGHT
+				) {
 					setBallDx(prev => -prev);
 					return LEFT_PADDLE_X + 2;
 				}
-				if (newX >= RIGHT_PADDLE_X - 1 && ballY >= rightPaddle && ballY < rightPaddle + PADDLE_HEIGHT) {
+				if (
+					newX >= RIGHT_PADDLE_X - 1 &&
+					ballY >= rightPaddle &&
+					ballY < rightPaddle + PADDLE_HEIGHT
+				) {
 					setBallDx(prev => -prev);
 					return RIGHT_PADDLE_X - 2;
 				}
@@ -109,22 +135,23 @@ export const Pong = ({
 				return newY;
 			});
 
-			// Simple AI for right paddle
-			setRightPaddle(prev => {
-				if (ballY > prev + PADDLE_HEIGHT / 2) {
-					return Math.min(GAME_HEIGHT - PADDLE_HEIGHT, prev + 1);
-				} else if (ballY < prev + PADDLE_HEIGHT / 2) {
-					return Math.max(0, prev - 1);
-				}
-				return prev;
-			});
+			// Update AI paddle if not in multiplayer mode
+			if (!multiplayer) {
+				setRightPaddle(prev => updateAIPaddle(ballY, prev));
+			}
 
 			// Increase ball speed on paddle hit
 			if (
-				(ballX <= LEFT_PADDLE_X + 2 && ballY >= leftPaddle && ballY < leftPaddle + PADDLE_HEIGHT) ||
-				(ballX >= RIGHT_PADDLE_X - 2 && ballY >= rightPaddle && ballY < rightPaddle + PADDLE_HEIGHT)
+				(ballX <= LEFT_PADDLE_X + 2 &&
+					ballY >= leftPaddle &&
+					ballY < leftPaddle + PADDLE_HEIGHT) ||
+				(ballX >= RIGHT_PADDLE_X - 2 &&
+					ballY >= rightPaddle &&
+					ballY < rightPaddle + PADDLE_HEIGHT)
 			) {
-				setBallSpeed(prev => Math.min(prev + BALL_SPEED_INCREMENT, MAX_BALL_SPEED));
+				setBallSpeed(prev =>
+					Math.min(prev + BALL_SPEED_INCREMENT, MAX_BALL_SPEED),
+				);
 			}
 
 			// Reset ball if it goes out of bounds
@@ -158,7 +185,16 @@ export const Pong = ({
 		}, GAME_SPEED);
 
 		return () => clearInterval(timer);
-	}, [ballDx, ballDy, leftPaddle, rightPaddle, gameOver, ballSpeed, gameState]);
+	}, [
+		ballDx,
+		ballDy,
+		leftPaddle,
+		rightPaddle,
+		gameOver,
+		ballSpeed,
+		gameState,
+		multiplayer,
+	]);
 
 	const renderGame = () => (
 		<Box flexDirection="column">
@@ -171,25 +207,50 @@ export const Pong = ({
 				<Box key={y}>
 					{Array.from({length: GAME_WIDTH}).map((_, x) => {
 						if (Math.round(ballX) === x && Math.round(ballY) === y) {
-							return <Text key={`${x}-${y}`} color="yellow">{BALL_CHAR}</Text>;
+							return (
+								<Text key={`${x}-${y}`} color="yellow">
+									{BALL_CHAR}
+								</Text>
+							);
 						}
-						if (x === LEFT_PADDLE_X && y >= leftPaddle && y < leftPaddle + PADDLE_HEIGHT) {
-							return <Text key={`${x}-${y}`} color="cyan">█</Text>;
+						if (
+							x === LEFT_PADDLE_X &&
+							y >= leftPaddle &&
+							y < leftPaddle + PADDLE_HEIGHT
+						) {
+							return (
+								<Text key={`${x}-${y}`} color="cyan">
+									█
+								</Text>
+							);
 						}
 						if (
 							x === RIGHT_PADDLE_X &&
 							y >= rightPaddle &&
 							y < rightPaddle + PADDLE_HEIGHT
 						) {
-							return <Text key={`${x}-${y}`} color="magenta">█</Text>;
+							return (
+								<Text key={`${x}-${y}`} color="magenta">
+									█
+								</Text>
+							);
 						}
 						if (x === GAME_WIDTH / 2) {
-							return <Text key={`${x}-${y}`} color="white">|</Text>;
+							return (
+								<Text key={`${x}-${y}`} color="white">
+									|
+								</Text>
+							);
 						}
 						return <Text key={`${x}-${y}`}> </Text>;
 					})}
 				</Box>
 			))}
+			<Box justifyContent="center" width={GAME_WIDTH}>
+				<Text color="white">
+					{multiplayer ? 'Multiplayer Mode' : 'Single Player Mode'}
+				</Text>
+			</Box>
 		</Box>
 	);
 
@@ -203,4 +264,3 @@ export const Pong = ({
 
 	return renderGame();
 };
-
