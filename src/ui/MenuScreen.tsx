@@ -1,6 +1,6 @@
-import React from 'react';
 import { Box, Text } from 'ink';
-import { GAME_WIDTH, GAME_HEIGHT } from './constants.js';
+import React from 'react';
+import { GAME_HEIGHT, GAME_WIDTH } from '../constants.js';
 
 export const MenuScreen: React.FC = () => (
   <Box flexDirection="column" alignItems="center" justifyContent="center" width={GAME_WIDTH} height={GAME_HEIGHT}>

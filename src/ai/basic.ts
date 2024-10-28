@@ -1,4 +1,4 @@
-import { GAME_HEIGHT, PADDLE_HEIGHT } from './constants.js';
+import { GAME_HEIGHT, PADDLE_HEIGHT } from '../constants.js';
 
 export const updateAIPaddle = (
   ballY: number,

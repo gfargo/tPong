@@ -1,6 +1,6 @@
-import React from 'react';
 import { Box, Text } from 'ink';
-import { GAME_WIDTH, GAME_HEIGHT } from './constants.js';
+import React from 'react';
+import { GAME_HEIGHT, GAME_WIDTH } from '../constants.js';
 
 interface GameOverScreenProps {
   winner: string;
