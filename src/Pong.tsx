@@ -14,6 +14,8 @@ import {
 	RIGHT_PADDLE_X,
 	INITIAL_BALL_POSITION
 } from './constants.js';
+import { MenuScreen } from './MenuScreen.js';
+import { GameOverScreen } from './GameOverScreen.js';
 
 export const Pong = ({
 	multiplayer,
@@ -161,28 +163,28 @@ export const Pong = ({
 	const renderGame = () => (
 		<Box flexDirection="column">
 			<Box justifyContent="space-between" width={GAME_WIDTH}>
-				<Text>Left: {leftScore}</Text>
-				<Text>Right: {rightScore}</Text>
-				<Text>Ball Speed: {ballSpeed.toFixed(1)}x</Text>
+				<Text color="cyan">Left: {leftScore}</Text>
+				<Text color="yellow">Ball Speed: {ballSpeed.toFixed(1)}x</Text>
+				<Text color="magenta">Right: {rightScore}</Text>
 			</Box>
 			{Array.from({length: GAME_HEIGHT}).map((_, y) => (
 				<Box key={y}>
 					{Array.from({length: GAME_WIDTH}).map((_, x) => {
 						if (Math.round(ballX) === x && Math.round(ballY) === y) {
-							return <Text key={`${x}-${y}`}>{BALL_CHAR}</Text>;
+							return <Text key={`${x}-${y}`} color="yellow">{BALL_CHAR}</Text>;
 						}
 						if (x === LEFT_PADDLE_X && y >= leftPaddle && y < leftPaddle + PADDLE_HEIGHT) {
-							return <Text key={`${x}-${y}`}>█</Text>;
+							return <Text key={`${x}-${y}`} color="cyan">█</Text>;
 						}
 						if (
 							x === RIGHT_PADDLE_X &&
 							y >= rightPaddle &&
 							y < rightPaddle + PADDLE_HEIGHT
 						) {
-							return <Text key={`${x}-${y}`}>█</Text>;
+							return <Text key={`${x}-${y}`} color="magenta">█</Text>;
 						}
 						if (x === GAME_WIDTH / 2) {
-							return <Text key={`${x}-${y}`}>|</Text>;
+							return <Text key={`${x}-${y}`} color="white">|</Text>;
 						}
 						return <Text key={`${x}-${y}`}> </Text>;
 					})}
@@ -192,25 +194,11 @@ export const Pong = ({
 	);
 
 	if (gameState === 'menu') {
-		return (
-			<Box flexDirection="column" alignItems="center" justifyContent="center">
-				<Text>Welcome to Pong!</Text>
-				<Text>Use Up and Down arrow keys to move the left paddle</Text>
-				<Text>Press Enter to start the game</Text>
-				<Text>Press Esc to exit during the game</Text>
-			</Box>
-		);
+		return <MenuScreen />;
 	}
 
 	if (gameState === 'gameOver') {
-		return (
-			<Box flexDirection="column" alignItems="center" justifyContent="center">
-				<Text>{winner} player wins!</Text>
-				<Text>Game Over</Text>
-				<Text>Press Enter to return to menu</Text>
-				<Text>Press Esc to exit</Text>
-			</Box>
-		);
+		return <GameOverScreen winner={winner} />;
 	}
 
 	return renderGame();
