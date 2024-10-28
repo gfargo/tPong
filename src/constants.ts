@@ -10,6 +10,6 @@ export const MAX_BALL_SPEED = 2;
 export const BALL_SPEED_INCREMENT = 0.1;
 export const WINNING_SCORE = 5;
 export const LEFT_PADDLE_X = 1;
-export const RIGHT_PADDLE_X = GAME_WIDTH - 2;
+export const RIGHT_PADDLE_X = GAME_WIDTH - 1;
 export const INITIAL_BALL_POSITION = { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 };
 
