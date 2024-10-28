@@ -2,7 +2,15 @@ import { Box, Text, useApp, useInput } from 'ink';
 import React, { useEffect, useState } from 'react';
 import { BALL_CHAR, PADDLE_HEIGHT } from './constants.js';
 
-export const Pong = () => {
+export const Pong = ({
+	multiplayer,
+}: {
+	multiplayer: boolean;
+}): JSX.Element | null => {
+	if (multiplayer) {
+		console.log('Two player mode is not implemented yet');
+	}
+
 	const {exit} = useApp();
 	const [leftPaddle, setLeftPaddle] = useState(0);
 	const [rightPaddle, setRightPaddle] = useState(0);
