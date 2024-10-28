@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { render } from 'ink';
-import meow from 'meow';
-import React from 'react';
-import { App } from './app.js';
+import { render } from 'ink'
+import meow from 'meow'
+import React from 'react'
+import { App } from './app.js'
 
 const cli = meow(
-	`
+  `
 	Usage
 	  $ tpong
 
@@ -16,18 +16,14 @@ const cli = meow(
 	  $ tpong // Single player
 	  $ tpong --multiplayer
 `,
-	{
-		importMeta: import.meta,
-		flags: {
-			multiplayer: {
-				type: 'boolean',
-			},
-		},
-	},
-);
+  {
+    importMeta: import.meta,
+    flags: {
+      multiplayer: {
+        type: 'boolean',
+      },
+    },
+  }
+)
 
-render(
-	<App
-		multiplayer={cli.flags.multiplayer ?? false}
-	/>,
-);
+render(<App multiplayer={cli.flags.multiplayer ?? false} />)
