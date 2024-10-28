@@ -10,6 +10,14 @@
     ansi-styles "^6.2.1"
     is-fullwidth-code-point "^4.0.0"
 
+"@ava/typescript@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@ava/typescript/-/typescript-5.0.0.tgz#1772294379ee3f93ee2843310504efba1695b0e7"
+  integrity sha512-2twsQz2fUd95QK1MtKuEnjkiN47SKHZfi/vWj040EN6Eo2ZW3SNcAwncJqXXoMTYZTWtBRXYp3Fg8z+JkFI9aQ==
+  dependencies:
+    escape-string-regexp "^5.0.0"
+    execa "^8.0.1"
+
 "@babel/code-frame@^7.0.0":
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.26.0.tgz#9374b5cd068d128dac0b94ff482594273b1c2815"
@@ -2025,6 +2033,21 @@ execa@^5.1.1:
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
 
+execa@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/execa/-/execa-8.0.1.tgz#51f6a5943b580f963c3ca9c6321796db8cc39b8c"
+  integrity sha512-VyhnebXciFV2DESc+p6B+y0LjSm0krU4OgJN44qFAhBY0TJ+1V61tYD2+wHusZ6F9n5K+vl8k0sTy7PEfV4qpg==
+  dependencies:
+    cross-spawn "^7.0.3"
+    get-stream "^8.0.1"
+    human-signals "^5.0.0"
+    is-stream "^3.0.0"
+    merge-stream "^2.0.0"
+    npm-run-path "^5.1.0"
+    onetime "^6.0.0"
+    signal-exit "^4.1.0"
+    strip-final-newline "^3.0.0"
+
 execa@^9.3.0:
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/execa/-/execa-9.5.0.tgz#b4437553fdd084f65184b5537a9bc38eac26c59a"
@@ -2634,10 +2657,10 @@ ink-gradient@^3.0.0:
     prop-types "^15.8.1"
     strip-ansi "^7.1.0"
 
-ink-testing-library@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ink-testing-library/-/ink-testing-library-3.0.0.tgz#7ff9ca443557dba273cea4f278063e540c88cc93"
-  integrity sha512-ItyyoOmcm6yftb7c5mZI2HU22BWzue8PBbO3DStmY8B9xaqfKr7QJONiWOXcwVsOk/6HuVQ0v7N5xhPaR3jycA==
+ink-testing-library@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/ink-testing-library/-/ink-testing-library-4.0.0.tgz#7071dac9a3d783e7bab2ee05fdf1d01a2cd3bb0d"
+  integrity sha512-yF92kj3pmBvk7oKbSq5vEALO//o7Z9Ck/OaLNlkzXNeYdwfpxMQkSowGTFUCS5MSu9bWfSZMewGpp7bFc66D7Q==
 
 ink@^4.1.0:
   version "4.4.1"

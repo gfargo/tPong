@@ -49,14 +49,6 @@ export function App({
       }
     ) => {
       switch (gameState) {
-        case 'menu': {
-          if (key.return) {
-            setGameState('playing')
-          }
-
-          break
-        }
-
         case 'playing': {
           if (key.upArrow) {
             setLeftPaddle((previous) => Math.max(0, previous - 1))
@@ -94,7 +86,19 @@ export function App({
 
           break
         }
-        // No default
+
+        case 'menu': {
+          if (key.return) {
+            setGameState('playing')
+          }
+
+          break
+        }
+
+        // Empty default case.
+        default: {
+          break
+        }
       }
     }
   )
@@ -209,7 +213,9 @@ export function App({
       clearInterval(timer)
     }
   }, [
+    ballX,
     ballDx,
+    ballY,
     ballDy,
     leftPaddle,
     rightPaddle,
@@ -219,6 +225,7 @@ export function App({
     isMultiplayerMode,
   ])
 
+  /* eslint-disable react/no-array-index-key */
   const renderGame = () => (
     <Box flexDirection="column">
       <Box justifyContent="space-between" width={GAME_WIDTH}>
@@ -282,6 +289,7 @@ export function App({
       </Box>
     </Box>
   )
+  /* eslint-enable react/no-array-index-key */
 
   if (gameState === 'menu') {
     return <MenuScreen />
