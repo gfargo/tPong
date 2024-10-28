@@ -7,14 +7,14 @@ import { App } from './app.js';
 const cli = meow(
 	`
 	Usage
-	  $ tong
+	  $ tpong
 
 	Options
 		--multiplayer
 
 	Examples
-	  $ tong // Single player
-	  $ tong --multiplayer
+	  $ tpong // Single player
+	  $ tpong --multiplayer
 `,
 	{
 		importMeta: import.meta,

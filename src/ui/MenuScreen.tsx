@@ -12,7 +12,7 @@ export const MenuScreen: React.FC = () => (
 		height={GAME_HEIGHT}
 	>
 		<Gradient name="rainbow">
-			<Text bold>Tong</Text>
+			<Text bold>tPong</Text>
 		</Gradient>
 		<Gradient name="rainbow">
 			<Text>─────────────────────</Text>
