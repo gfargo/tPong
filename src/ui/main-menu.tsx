@@ -21,13 +21,6 @@ export function MenuScreen() {
           <Text bold>{TITLE_ART}</Text>
         </Gradient>
       </Box>
-      {/* <Gradient name="summer">
-        <Text>─────────────────────</Text>
-      </Gradient> */}
-
-      {/* <Gradient name="summer">
-        <Text>─────────────────────</Text>
-        </Gradient> */}
       <Box marginTop={1}>
         <Text color="yellow">Press Enter to start</Text>
       </Box>
