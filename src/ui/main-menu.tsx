@@ -1,7 +1,7 @@
 import { Box, Text } from 'ink'
 import Gradient from 'ink-gradient'
 import React from 'react'
-import { GAME_HEIGHT, GAME_WIDTH } from '../constants.js'
+import { GAME_HEIGHT, GAME_WIDTH, TITLE_ART } from '../constants.js'
 
 export function MenuScreen() {
   return (
@@ -11,22 +11,37 @@ export function MenuScreen() {
       justifyContent="center"
       width={GAME_WIDTH}
       height={GAME_HEIGHT}
+      borderStyle={'round'}
+      borderDimColor
+      padding={1}
+      paddingX={3}
     >
-      <Gradient name="rainbow">
-        <Text bold>tPong</Text>
-      </Gradient>
-      <Gradient name="rainbow">
+      <Box marginBottom={1}>
+        <Gradient name="summer">
+          <Text bold>{TITLE_ART}</Text>
+        </Gradient>
+      </Box>
+      {/* <Gradient name="summer">
         <Text>─────────────────────</Text>
-      </Gradient>
-      <Text color="yellow">Controls:</Text>
-      <Text>↑ / ↓ : Move paddle</Text>
-      <Text>ESC : Exit game</Text>
+      </Gradient> */}
 
-      <Gradient name="rainbow">
+      {/* <Gradient name="summer">
         <Text>─────────────────────</Text>
-      </Gradient>
+        </Gradient> */}
+      <Box marginTop={1}>
+        <Text color="yellow">Press Enter to start</Text>
+      </Box>
 
-      <Text color="cyan">Press Enter to start</Text>
+      <Box
+        marginTop={1}
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Text dimColor>Controls:</Text>
+        <Text dimColor>↑ / ↓ : Move paddle</Text>
+        <Text dimColor>ESC : Exit game</Text>
+      </Box>
     </Box>
   )
 }

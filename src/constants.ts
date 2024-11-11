@@ -12,3 +12,11 @@ export const WINNING_SCORE = 5
 export const LEFT_PADDLE_X = 1
 export const RIGHT_PADDLE_X = GAME_WIDTH - 1
 export const INITIAL_BALL_POSITION = { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 }
+
+export const TITLE_ART = `  __   _______                   
+ |  |_|   _   .-----.-----.-----.
+ |   _|.  1   |  _  |     |  _  |
+ |____|.  ____|_____|__|__|___  |
+      |:  |               |_____|
+      |::.|                      
+      \`---'                      `
